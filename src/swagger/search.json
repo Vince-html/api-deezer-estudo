@@ -1,0 +1,118 @@
+{
+  "swagger": "3.0",
+  "openapi": "3.1.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Api Deezer for cors",
+    "description": ""
+  },
+  "host": "localhost:3001",
+  "basePath": "/",
+  "schemes": ["http"],
+  "swaggerDefinition": {
+    "info": {
+      "title": "API de Busca",
+      "version": "1.0.0"
+    }
+  },
+  "paths": {},
+  "components": {
+    "schemas": {
+      "Deezer": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeezerData"
+            }
+          },
+          "total": {
+            "type": "integer"
+          },
+          "next": {
+            "type": "string"
+          }
+        }
+      },
+      "Search": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeezerData"
+            }
+          },
+          "total": {
+            "type": "integer"
+          },
+          "next": {
+            "type": "string"
+          },
+          "prev": {
+            "type": "string"
+          }
+        }
+      },
+      "DeezerData": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "link": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "integer"
+          },
+
+          "preview": {
+            "type": "string"
+          },
+          "artist": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              },
+              "link": {
+                "type": "string"
+              },
+              "picture": {
+                "type": "string"
+              },
+              "picture_big": {
+                "type": "string"
+              }
+            }
+          },
+          "album": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "title": {
+                "type": "string"
+              },
+              "cover": {
+                "type": "string"
+              },
+              "cover_big": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
