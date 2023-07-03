@@ -11,6 +11,7 @@
     "outDir": "build",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
     "strict": true,
     "noImplicitAny": true,
     "skipLibCheck": true

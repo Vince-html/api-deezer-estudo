@@ -42,8 +42,6 @@ export class Search implements ISearch {
         : '';
       const total = response.data.total;
 
-      console.log(response.data);
-
       return {
         data: tracks,
         total,
@@ -53,7 +51,6 @@ export class Search implements ISearch {
           : '',
       };
     } catch (error) {
-      console.log(error);
       return new Error('Falha na busca.');
     }
   }
