@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { IGetTrack } from '../interfaces/getTrack';
-import { ITrack } from '../interfaces/track';
+import { IGetTrack, ITrack } from '../../interfaces';
 
 export class GetTrack implements IGetTrack {
   constructor() {}

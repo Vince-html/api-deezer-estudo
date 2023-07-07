@@ -1,8 +1,5 @@
 import axios from 'axios';
-
-import { ITrack } from '../interfaces/track';
-import { ISearch } from '../interfaces/getSearch';
-import { ISearchDeezer } from '../interfaces/search';
+import { ISearch, ISearchDeezer, ITrack } from '../../interfaces';
 
 export class Search implements ISearch {
   constructor() {}

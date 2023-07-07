@@ -95,6 +95,139 @@
           }
         }
       }
+    },
+    "/auth": {
+      "post": {
+        "description": "Registro de usuario",
+        "tags": ["Auth"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Bad resquest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "body": "Usuário ou senha não informados"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "description": "Login de usuario",
+        "tags": ["Auth"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["username", "password"],
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "body": "Login"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad resquest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "body": "Usuário ou senha não informados"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "description": "Busca de usuario",
+        "tags": ["Auth"],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad resquest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "body": "Usuário não encontrado"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -109,7 +242,7 @@
             }
           },
           "total": {
-            "type": "integer"
+            "type": "number"
           },
           "next": {
             "type": "string"
@@ -126,7 +259,7 @@
             }
           },
           "total": {
-            "type": "integer"
+            "type": "number"
           },
           "next": {
             "type": "string"
@@ -136,11 +269,18 @@
           }
         }
       },
+      "User": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "$ref": "#/components/schemas/UserData"
+        }
+      },
       "DeezerData": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "integer"
+            "type": "number"
           },
           "title": {
             "type": "string"
@@ -149,7 +289,7 @@
             "type": "string"
           },
           "duration": {
-            "type": "integer"
+            "type": "number"
           },
 
           "preview": {
@@ -159,7 +299,7 @@
             "type": "object",
             "properties": {
               "id": {
-                "type": "integer"
+                "type": "number"
               },
               "name": {
                 "type": "string"
@@ -179,7 +319,7 @@
             "type": "object",
             "properties": {
               "id": {
-                "type": "integer"
+                "type": "number"
               },
               "title": {
                 "type": "string"
@@ -191,6 +331,17 @@
                 "type": "string"
               }
             }
+          }
+        }
+      },
+      "UserData": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "username": {
+            "type": "string"
           }
         }
       }
