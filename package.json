@@ -2,7 +2,8 @@
   "scripts": {
     "dev": "nodemon ./src/server.ts",
     "start": "node ./src/server.ts",
-    "test": "jest --watchAll --verbose --coverage",
+    "test": "jest",
+    "testAll": "jest --watchAll --verbose --coverage",
     "swagger-autogen": "node swagger.js"
   },
   "dependencies": {

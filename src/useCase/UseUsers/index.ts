@@ -2,7 +2,7 @@ import { users } from '../../../db';
 import { IUsers, User } from '../../interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
+import { sign } from 'jsonwebtoken';
 
 class UseUsers implements IUsers {
   users: User[];
@@ -69,12 +69,14 @@ class UseUsers implements IUsers {
       return new Error('Usuário não encontrado');
     }
     const enteredPassword = password;
-    const storedHashedPassword = findUser.password; // Hash armazenado no banco de dados
+    const storedHashedPassword = findUser.password;
+
     try {
-      const isPasswordValid = this.comparePassword(
+      const isPasswordValid = await this.comparePassword(
         enteredPassword,
         storedHashedPassword
       );
+
       if (isPasswordValid instanceof Error) {
         return new Error('Senha inválida');
       }
@@ -94,8 +96,7 @@ class UseUsers implements IUsers {
       if (!process.env.TEST) {
         return new Error('Erro ao gerar token');
       }
-      jwt.sign(userId, process.env.TEST, (err, token) => {
-        console.log(err, token, userId);
+      sign(userId, process.env.TEST, (err, token) => {
         if (err || !token) {
           reject(new Error('Erro ao gerar token'));
         } else {
