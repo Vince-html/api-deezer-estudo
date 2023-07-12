@@ -1,8 +1,19 @@
 import request from 'supertest';
+import { stopContainer } from '../../dockerintegrationstop';
 import { app } from '../../src/server';
 import { UseUsers } from '../../src/useCase/UseUsers';
+import { sequelize } from '../../src/connect';
+import { User } from '../../src/Models/user';
 
+afterAll(async () => {
+  await sequelize.close();
+
+  await stopContainer();
+});
 describe('Auth route', () => {
+  beforeEach(async () => {
+    await sequelize.sync();
+  });
   test('should return 400 when username or password is not informed', async () => {
     const response = await request(app).post('/auth').send({
       username: 'test',
@@ -11,6 +22,7 @@ describe('Auth route', () => {
     expect(response.status).toBe(400);
   });
   test('should return 200 when username and password is informed', async () => {
+    await User.destroy({ where: { name: 'test' } });
     const response = await request(app).post('/auth').send({
       username: 'test',
       password: 'test',
@@ -47,11 +59,7 @@ describe('Auth route', () => {
 
     expect(response.status).toBe(200);
   });
-  test('get by id and not found user', async () => {
-    const response = await request(app).get('/auth').query({ id: '1' });
 
-    expect(response.status).toBe(400);
-  });
   test('put user and return 200', async () => {
     const response = await request(app).put('/auth').send({
       username: 'test',

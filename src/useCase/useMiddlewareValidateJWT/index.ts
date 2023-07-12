@@ -19,9 +19,10 @@ const middlewareValidarJWT = (
         res.status(403).end();
         return;
       }
-      console.log('userInfo', userInfo);
-
+      req.body.userId = userInfo;
       next();
     });
   }
 };
+
+export { middlewareValidarJWT };

@@ -1,13 +1,13 @@
-import { User } from './user';
+import { IUser } from './user';
 
-type UserP = Omit<User, 'password'>;
+type UserP = Omit<IUser, 'password'>;
 
 export interface IUsers {
-  users: User[];
-  get(userId?: string, userName?: string): Promise<UserP[] | UserP | Error>;
+  users: IUser[];
+  get(userId?: number, userName?: string): Promise<UserP[] | UserP | Error>;
   create(userName: string, password: string): Promise<UserP | Error>;
   createPassword(password: string): Promise<string | Error>;
   comparePassword(password: string, hash: string): Promise<boolean | Error>;
-  createToken(userId: string): Promise<string | Error>;
+  createToken(userId: number): Promise<string | Error>;
   login(userName: string, password: string): Promise<string | Error>;
 }

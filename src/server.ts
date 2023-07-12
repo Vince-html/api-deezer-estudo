@@ -10,6 +10,7 @@ import { JsonObject } from 'swagger-ui-express';
 import bodyParser from 'body-parser';
 // import { swagger } from './swagger/swagger_output.json';
 import { serve, setup } from 'swagger-ui-express';
+import { sequelize } from './connect';
 
 const deezerDoc = require('./swagger/swagger_output.json');
 
@@ -17,6 +18,9 @@ const app = express();
 require('dotenv').config();
 const jsonObject: JsonObject = deezerDoc as unknown as JsonObject;
 app.use('/api-docs', serve, setup(jsonObject, { explorer: true }));
+sequelize.sync().then(() => {
+  console.log('All models were synchronized successfully.');
+});
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
@@ -30,6 +34,7 @@ function startServer() {
   const server = app.listen(3001, () => {});
 
   process.on('SIGINT', () => {
+    sequelize.close();
     server.close(() => {
       console.log('Servidor proxy encerrado.');
       process.exit(0);
@@ -39,6 +44,5 @@ function startServer() {
 if (require.main === module) {
   startServer();
 }
-// app.listen(3001, () => {});
 
 export { app };

@@ -1,22 +1,29 @@
 import { users } from '../../../db';
-import { IUsers, User } from '../../interfaces';
+import { IUsers, IUser } from '../../interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 
+import { User } from '../../Models/user';
+import { sequelize } from '../../connect';
+
 class UseUsers implements IUsers {
-  users: User[];
-  constructor() {
-    this.users = users;
-  }
-  private removePassword = (user: User) => {
+  constructor() {}
+  users: IUser[];
+
+  private removePassword = (user: IUser) => {
     const { password, ...userWithoutPassword } = user;
     return userWithoutPassword;
   };
 
-  async get(userId?: string, userName?: string) {
+  async get(userId?: number, userName?: string) {
+    const users = await User.findAll({
+      attributes: ['id', 'name'],
+      raw: true,
+    });
+
     if (userId) {
-      const user = this.users.find((user) => user.id === userId);
+      const user = users.find((user) => user.id === userId);
 
       if (!user) {
         return new Error('Usuário não encontrado');
@@ -24,28 +31,38 @@ class UseUsers implements IUsers {
       return this.removePassword(user);
     }
     if (userName) {
-      const user = this.users.find((user) => user.name === userName);
+      const user = users.find((user) => user.name === userName);
       if (!user) {
         return new Error('Usuário não encontrado');
       }
       return this.removePassword(user);
     }
-    const removeAllPasswords = this.users.map((user) => {
-      return this.removePassword(user);
-    });
-    return removeAllPasswords;
+
+    return users;
   }
   async create(userName: string, password: string) {
+    const users = await User.findAll({
+      attributes: ['name'],
+      raw: true,
+    });
+
     try {
-      const findUser = this.users.find((user) => user.name === userName);
+      const findUser = users.find((user) => user.name === userName);
 
       if (findUser) {
         return new Error('Usuário já existe');
       }
       const hashPassword = await this.createPassword(password);
-      const user = { name: userName, password: hashPassword, id: uuidv4() };
-      this.users.push(user);
-      return this.removePassword(user);
+      const newU = await User.create({
+        name: userName,
+        password: hashPassword,
+      });
+      const userNew = {
+        name: newU.name,
+        id: newU.id,
+      };
+
+      return userNew;
     } catch (err) {
       return new Error('Houve um problema na criação do usuário');
     }
@@ -64,7 +81,9 @@ class UseUsers implements IUsers {
   }
 
   async login(userName: string, password: string) {
-    const findUser = this.users.find((user) => user.name === userName);
+    const users = await User.findAll();
+    let token: string | Error;
+    const findUser = users.find((user) => user.name === userName);
     if (!findUser) {
       return new Error('Usuário não encontrado');
     }
@@ -80,7 +99,10 @@ class UseUsers implements IUsers {
       if (isPasswordValid instanceof Error) {
         return new Error('Senha inválida');
       }
-      const token = await this.createToken(findUser.id);
+      if (!findUser.id) {
+        return new Error('Usuário não encontrado');
+      }
+      token = await this.createToken(findUser.id);
       if (token instanceof Error) {
         return token;
       }
@@ -90,13 +112,14 @@ class UseUsers implements IUsers {
       return new Error('Houve um problema na criação do usuário');
     }
   }
-  async createToken(userId: string) {
+  async createToken(userId: number) {
+    require('dotenv').config();
     const tokenUser: string | Error = await new Promise((resolve, reject) => {
-      require('dotenv').config();
-      if (!process.env.TEST) {
-        return new Error('Erro ao gerar token');
+      if (!process.env.TEST || process.env.TEST === 'undefined' || !userId) {
+        return reject(new Error('Erro ao gerar token'));
       }
-      sign(userId, process.env.TEST, (err, token) => {
+
+      sign(userId.toString(), process.env.TEST, (err, token) => {
         if (err || !token) {
           reject(new Error('Erro ao gerar token'));
         } else {

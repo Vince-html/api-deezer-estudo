@@ -4,3 +4,4 @@ export * from './getSearch';
 export * from './search';
 export * from './user';
 export * from './users';
+export * from './useFavorite';

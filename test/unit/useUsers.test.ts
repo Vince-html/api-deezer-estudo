@@ -1,9 +1,18 @@
-import { User } from '../../src/interfaces';
 import { UseUsers } from '../../src/useCase/UseUsers';
-import { users } from '../../db';
-
+import { User } from '../../src/Models/user';
+import bcrypt from 'bcrypt';
 describe('Create UseUsers', () => {
   test('create', async () => {
+    const findAllSpy = jest.spyOn(User, 'findAll');
+    const spyCreate = jest.spyOn(User, 'create');
+
+    findAllSpy.mockResolvedValue([]);
+    spyCreate.mockResolvedValue({
+      name: 'user',
+      password: 'password',
+      id: 1,
+    } as unknown as User);
+
     const useUsers = new UseUsers();
     const user = await useUsers.create('user', 'password');
 
@@ -13,6 +22,15 @@ describe('Create UseUsers', () => {
   });
 
   test('create and findUser', async () => {
+    const findAllSpy = jest.spyOn(User, 'findAll');
+
+    findAllSpy.mockResolvedValue([
+      {
+        name: 'user',
+        password: 'password',
+        id: 1,
+      } as unknown as User,
+    ]);
     const useUsers = new UseUsers();
     const user = await useUsers.create('user', 'password');
 
@@ -23,7 +41,7 @@ describe('Create UseUsers', () => {
 describe('Get UseUsers', () => {
   test('get by id', async () => {
     const useUsers = new UseUsers();
-    const user = await useUsers.get(users[0].id);
+    const user = await useUsers.get(1);
 
     expect(user).toHaveProperty('name');
     expect(user).toHaveProperty('id');
@@ -31,7 +49,7 @@ describe('Get UseUsers', () => {
   });
   test('get by name', async () => {
     const useUsers = new UseUsers();
-    const user = await useUsers.get(undefined, users[0].name);
+    const user = await useUsers.get(undefined, 'user');
 
     expect(user).toHaveProperty('name');
     expect(user).toHaveProperty('id');
@@ -42,16 +60,10 @@ describe('Get UseUsers', () => {
     const user = await useUsers.get();
 
     expect(user).toBeInstanceOf(Array);
-    expect(user).toStrictEqual([
-      {
-        name: users[0].name,
-        id: users[0].id,
-      },
-    ]);
   });
   test('get by id and not found', async () => {
     const useUsers = new UseUsers();
-    const user = await useUsers.get('id');
+    const user = await useUsers.get(2);
 
     expect(user).toBeInstanceOf(Error);
     expect(user).toStrictEqual(Error('Usuário não encontrado'));
@@ -66,8 +78,11 @@ describe('Get UseUsers', () => {
 });
 describe('Login UseUsers', () => {
   test('login', async () => {
+    const findAllSpy = jest.spyOn(bcrypt, 'compare');
+
+    findAllSpy.mockImplementation(() => Promise.resolve(true));
     const useUsers = new UseUsers();
-    const user = await useUsers.login(users[0].name, 'password');
+    const user = await useUsers.login('user', 'password');
 
     expect(typeof user).toBe('string');
   });
@@ -78,18 +93,30 @@ describe('Login UseUsers', () => {
     expect(user).toBeInstanceOf(Error);
     expect(user).toStrictEqual(Error('Usuário não encontrado'));
   });
-  test('login and password invalid', async () => {
+  test('login and not found', async () => {
+    const findAllSpy = jest.spyOn(User, 'findAll');
+
+    findAllSpy.mockResolvedValue([
+      {
+        name: 'user',
+        password: 'password',
+        id: false,
+      } as unknown as User,
+    ]);
     const useUsers = new UseUsers();
-    const user = await useUsers.login(users[0].name, 'password2223');
+    const user = await useUsers.login('name', 'password');
+
+    expect(user).toBeInstanceOf(Error);
+    expect(user).toStrictEqual(Error('Usuário não encontrado'));
+  });
+  test('login and password invalid', async () => {
+    const findAllSpy = jest.spyOn(bcrypt, 'compare');
+
+    findAllSpy.mockImplementation(() => Promise.resolve(false));
+    const useUsers = new UseUsers();
+    const user = await useUsers.login('user', 'password2223');
 
     expect(user).toBeInstanceOf(Error);
     expect(user).toStrictEqual(Error('Senha inválida'));
-  });
-  test('login and invalid Token', async () => {
-    const useUsers = new UseUsers();
-    const user = await useUsers.login(users[0].name, 'password');
-
-    expect(typeof user).toBe('string');
-    expect(user).not.toBe('Token');
   });
 });

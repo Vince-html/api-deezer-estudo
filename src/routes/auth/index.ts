@@ -48,7 +48,7 @@ router.get('', async (req: express.Request, res: express.Response) => {
   const nameUser = req.query.username?.toString() || undefined;
 
   const useUsers = new UseUsers();
-  const users = await useUsers.get(idUser, nameUser);
+  const users = await useUsers.get(Number(idUser), nameUser);
   if (users instanceof Error) {
     return res.status(400).send(users.message);
   }
