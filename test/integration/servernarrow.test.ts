@@ -1,6 +1,15 @@
 import request from 'supertest';
 import { mock } from '../../src/mock/track';
 import { app } from '../../src/server';
+import { sequelize } from '../../src/connect';
+afterAll(async () => {
+  await sequelize.close();
+
+  // await stopContainer();
+});
+beforeEach(async () => {
+  await sequelize.sync();
+});
 
 let MockGetTrack: jest.Mock;
 beforeEach(() => {

@@ -2,10 +2,10 @@
   "scripts": {
     "dev": "nodemon ./src/server.ts",
     "start": "node ./src/server.ts",
-    "test": "jest --watchAll",
-    "testAll": "jest --watchAll --verbose --coverage",
-    "testIntegrationAll": "node dockerintegrationstart.js && jest --watchAll --verbose --coverage --testPathPattern=test/integration",
-    "testIntegration": "node dockerintegrationstart.js && jest --watchAll --verbose",
+    "testUnit": "jest --watchAll --verbose -c jest-unit.js",
+    "testAll": "jest --watchAll --silent --verbose --coverage",
+    "testIntegrationAll": "node dockerintegrationstart.js && jest --verbose --coverage --testPathPattern=test/integration",
+    "testIntegration": "node dockerintegrationstart.js && jest --watch --verbose",
     "swagger-autogen": "node swagger.js"
   },
   "dependencies": {

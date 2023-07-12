@@ -18,9 +18,6 @@ const app = express();
 require('dotenv').config();
 const jsonObject: JsonObject = deezerDoc as unknown as JsonObject;
 app.use('/api-docs', serve, setup(jsonObject, { explorer: true }));
-sequelize.sync().then(() => {
-  console.log('All models were synchronized successfully.');
-});
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
@@ -31,6 +28,9 @@ app.use('/search', search);
 app.use('/auth', authPost);
 
 function startServer() {
+  sequelize.sync().then(() => {
+    console.log('All models were synchronized successfully.');
+  });
   const server = app.listen(3001, () => {});
 
   process.on('SIGINT', () => {

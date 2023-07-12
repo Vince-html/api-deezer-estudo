@@ -1,6 +1,4 @@
-import type { Config } from '@jest/types';
-
-const config: Config.InitialOptions = {
+module.exports = {
   preset: 'ts-jest',
   transform: {
     '^.+\\.(ts|tsx)?$': 'ts-jest',
@@ -22,5 +20,3 @@ const config: Config.InitialOptions = {
     '.mock.ts',
   ],
 };
-
-export default config;

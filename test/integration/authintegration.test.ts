@@ -8,7 +8,7 @@ import { User } from '../../src/Models/user';
 afterAll(async () => {
   await sequelize.close();
 
-  await stopContainer();
+  // await stopContainer();
 });
 describe('Auth route', () => {
   beforeEach(async () => {
