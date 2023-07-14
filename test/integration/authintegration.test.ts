@@ -10,10 +10,10 @@ afterAll(async () => {
 
   // await stopContainer();
 });
+beforeEach(async () => {
+  await sequelize.sync();
+});
 describe('Auth route', () => {
-  beforeEach(async () => {
-    await sequelize.sync();
-  });
   test('should return 400 when username or password is not informed', async () => {
     const response = await request(app).post('/auth').send({
       username: 'test',
