@@ -1,6 +1,7 @@
 import express from 'express';
 
 import { UseUsers } from '../../useCase/UseUsers';
+import { UserRepository } from '../../infra/user-repository';
 
 const router = express.Router();
 require('dotenv').config();
@@ -22,15 +23,14 @@ router.post('', async (req: express.Request, res: express.Response) => {
   }
 
   try {
-    const useUsers = new UseUsers();
+    const userRepository = new UserRepository();
+    const useUsers = new UseUsers(userRepository);
     const newUser = await useUsers.create(userName, password);
 
     if (newUser instanceof Error) {
       return res.status(400).send(newUser.message);
     }
-    return res
-      .status(200)
-      .send({ message: 'Usuário criado com sucesso', data: newUser });
+    return res.status(200).send({ message: newUser });
   } catch (err) {
     return res.status(400).send('Erro ao criar usuário');
   }
@@ -46,8 +46,8 @@ router.get('', async (req: express.Request, res: express.Response) => {
 
   const idUser = req.query.id?.toString() || undefined;
   const nameUser = req.query.username?.toString() || undefined;
-
-  const useUsers = new UseUsers();
+  const userRepository = new UserRepository();
+  const useUsers = new UseUsers(userRepository);
   const users = await useUsers.get(Number(idUser), nameUser);
   if (users instanceof Error) {
     return res.status(400).send(users.message);
@@ -65,7 +65,8 @@ router.put('', async (req: express.Request, res: express.Response) => {
   const userName = req.body.username;
   const password = req.body.password;
   try {
-    const useUsers = new UseUsers();
+    const userRepository = new UserRepository();
+    const useUsers = new UseUsers(userRepository);
     const loginSuccess = await useUsers.login(userName, password);
     if (loginSuccess instanceof Error) {
       return res.status(400).send(loginSuccess.message);

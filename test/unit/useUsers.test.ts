@@ -1,9 +1,23 @@
 import { UseUsers } from '../../src/useCase/UseUsers';
 import { User } from '../../src/Models/user';
 import bcrypt from 'bcrypt';
+
+const MockUserRepository = jest.fn(() => ({
+  create: jest.fn(),
+  update: jest.fn(),
+  delete: jest.fn(),
+  getById: jest.fn(),
+  getByName: jest.fn(),
+  getAll: jest.fn(),
+  checkExistsUser: jest.fn(),
+}));
+
+const userRepository = MockUserRepository();
+
 describe('Create UseUsers', () => {
   test('create', async () => {
     const findAllSpy = jest.spyOn(User, 'findAll');
+
     const spyCreate = jest.spyOn(User, 'create');
 
     findAllSpy.mockResolvedValue([]);
@@ -13,12 +27,12 @@ describe('Create UseUsers', () => {
       id: 1,
     } as unknown as User);
 
-    const useUsers = new UseUsers();
+    const spyCreateRepository = jest.spyOn(userRepository, 'create');
+    spyCreateRepository.mockResolvedValue(true);
+    const useUsers = new UseUsers(userRepository);
     const user = await useUsers.create('user', 'password');
 
-    expect(user).toHaveProperty('name');
-    expect(user).toHaveProperty('id');
-    expect(user).not.toHaveProperty('password');
+    expect(user).toEqual('Usuário criado com sucesso');
   });
 
   test('create and findUser', async () => {
@@ -31,7 +45,10 @@ describe('Create UseUsers', () => {
         id: 1,
       } as unknown as User,
     ]);
-    const useUsers = new UseUsers();
+
+    const spyCreateRepository = jest.spyOn(userRepository, 'checkExistsUser');
+    spyCreateRepository.mockResolvedValue(true);
+    const useUsers = new UseUsers(userRepository);
     const user = await useUsers.create('user', 'password');
 
     expect(user).toBeInstanceOf(Error);
@@ -40,7 +57,12 @@ describe('Create UseUsers', () => {
 });
 describe('Get UseUsers', () => {
   test('get by id', async () => {
-    const useUsers = new UseUsers();
+    const spyCreateRepository = jest.spyOn(userRepository, 'getById');
+    spyCreateRepository.mockResolvedValue({
+      name: 'user',
+      id: 1,
+    } as unknown as User);
+    const useUsers = new UseUsers(userRepository);
     const user = await useUsers.get(1);
 
     expect(user).toHaveProperty('name');
@@ -48,7 +70,12 @@ describe('Get UseUsers', () => {
     expect(user).not.toHaveProperty('password');
   });
   test('get by name', async () => {
-    const useUsers = new UseUsers();
+    const spyCreateRepository = jest.spyOn(userRepository, 'getByName');
+    spyCreateRepository.mockResolvedValue({
+      name: 'user',
+      id: 1,
+    } as unknown as User);
+    const useUsers = new UseUsers(userRepository);
     const user = await useUsers.get(undefined, 'user');
 
     expect(user).toHaveProperty('name');
@@ -56,20 +83,32 @@ describe('Get UseUsers', () => {
     expect(user).not.toHaveProperty('password');
   });
   test('get all', async () => {
-    const useUsers = new UseUsers();
+    const spyCreateRepository = jest.spyOn(userRepository, 'getAll');
+    spyCreateRepository.mockResolvedValue([
+      {
+        name: 'user',
+        id: 1,
+      },
+    ]);
+    const useUsers = new UseUsers(userRepository);
+
     const user = await useUsers.get();
 
     expect(user).toBeInstanceOf(Array);
   });
   test('get by id and not found', async () => {
-    const useUsers = new UseUsers();
+    const spyCreateRepository = jest.spyOn(userRepository, 'getById');
+    spyCreateRepository.mockResolvedValue(null);
+    const useUsers = new UseUsers(userRepository);
     const user = await useUsers.get(2);
 
     expect(user).toBeInstanceOf(Error);
     expect(user).toStrictEqual(Error('Usuário não encontrado'));
   });
   test('get by id and not found', async () => {
-    const useUsers = new UseUsers();
+    const spyCreateRepository = jest.spyOn(userRepository, 'getByName');
+    const useUsers = new UseUsers(userRepository);
+    spyCreateRepository.mockResolvedValue(null);
     const user = await useUsers.get(undefined, 'name22');
 
     expect(user).toBeInstanceOf(Error);
@@ -81,13 +120,13 @@ describe('Login UseUsers', () => {
     const findAllSpy = jest.spyOn(bcrypt, 'compare');
 
     findAllSpy.mockImplementation(() => Promise.resolve(true));
-    const useUsers = new UseUsers();
+    const useUsers = new UseUsers(new MockUserRepository());
     const user = await useUsers.login('user', 'password');
 
     expect(typeof user).toBe('string');
   });
   test('login and not found', async () => {
-    const useUsers = new UseUsers();
+    const useUsers = new UseUsers(new MockUserRepository());
     const user = await useUsers.login('name', 'password');
 
     expect(user).toBeInstanceOf(Error);
@@ -103,7 +142,7 @@ describe('Login UseUsers', () => {
         id: false,
       } as unknown as User,
     ]);
-    const useUsers = new UseUsers();
+    const useUsers = new UseUsers(new MockUserRepository());
     const user = await useUsers.login('name', 'password');
 
     expect(user).toBeInstanceOf(Error);
@@ -113,7 +152,7 @@ describe('Login UseUsers', () => {
     const findAllSpy = jest.spyOn(bcrypt, 'compare');
 
     findAllSpy.mockImplementation(() => Promise.resolve(false));
-    const useUsers = new UseUsers();
+    const useUsers = new UseUsers(new MockUserRepository());
     const user = await useUsers.login('user', 'password2223');
 
     expect(user).toBeInstanceOf(Error);

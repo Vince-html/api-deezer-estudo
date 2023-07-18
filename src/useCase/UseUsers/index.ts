@@ -1,14 +1,15 @@
-import { users } from '../../../db';
 import { IUsers, IUser } from '../../interfaces';
-import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 
 import { User } from '../../Models/user';
-import { sequelize } from '../../connect';
+import { IUserRepository } from '../../interfaces/user-repository';
 
 class UseUsers implements IUsers {
-  constructor() {}
+  private userRepository: IUserRepository;
+  constructor(UserRepository: IUserRepository) {
+    this.userRepository = UserRepository;
+  }
   users: IUser[];
 
   private removePassword = (user: IUser) => {
@@ -17,13 +18,8 @@ class UseUsers implements IUsers {
   };
 
   async get(userId?: number, userName?: string) {
-    const users = await User.findAll({
-      attributes: ['id', 'name'],
-      raw: true,
-    });
-
     if (userId) {
-      const user = users.find((user) => user.id === userId);
+      const user = await this.userRepository.getById(userId);
 
       if (!user) {
         return new Error('Usuário não encontrado');
@@ -31,38 +27,31 @@ class UseUsers implements IUsers {
       return this.removePassword(user);
     }
     if (userName) {
-      const user = users.find((user) => user.name === userName);
+      const user = await this.userRepository.getByName(userName);
+
       if (!user) {
         return new Error('Usuário não encontrado');
       }
       return this.removePassword(user);
     }
+    const users = await this.userRepository.getAll();
 
-    return users;
+    return users.map((user) => this.removePassword(user));
   }
   async create(userName: string, password: string) {
-    const users = await User.findAll({
-      attributes: ['name'],
-      raw: true,
-    });
-
     try {
-      const findUser = users.find((user) => user.name === userName);
+      const findUser = await this.userRepository.checkExistsUser(userName);
 
       if (findUser) {
         return new Error('Usuário já existe');
       }
       const hashPassword = await this.createPassword(password);
-      const newU = await User.create({
+      await this.userRepository.create({
         name: userName,
         password: hashPassword,
       });
-      const userNew = {
-        name: newU.name,
-        id: newU.id,
-      };
 
-      return userNew;
+      return 'Usuário criado com sucesso';
     } catch (err) {
       return new Error('Houve um problema na criação do usuário');
     }
