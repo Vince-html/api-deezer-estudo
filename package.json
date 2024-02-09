@@ -11,6 +11,16 @@
     "prepare": "husky install",
     "lint": "eslint . --ext .ts"
   },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "prepare-commit-msg": "exec < /dev/tty && npx cz --hook || true"
+    }
+  },
   "dependencies": {
     "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
