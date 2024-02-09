@@ -117,11 +117,11 @@ class UseUsers implements IUsers {
 
       return token;
     } catch (err) {
-      return new Error('Houve um problema na criação do usuário');
+      return new Error('Houve um problema no login do usuário');
     }
   }
 
-  async createToken(userId: number): Promise<string | Error> {
+  async createToken(userId?: number): Promise<string | Error> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     require('dotenv').config();
     const tokenUser: string | Error = await new Promise((resolve, reject) => {
