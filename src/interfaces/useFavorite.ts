@@ -1,7 +1,7 @@
-import { ITrack } from './track';
+import { type ITrack } from './track'
 
 interface IUseFavoriteMusic {
-  incrementeList: (music: ITrack, userId: string) => Promise<ITrack[] | Error>;
+  incrementeList: (music: ITrack, userId: string) => Promise<ITrack[] | Error>
 }
 
-export { IUseFavoriteMusic };
+export type { IUseFavoriteMusic }

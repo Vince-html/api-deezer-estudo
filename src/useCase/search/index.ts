@@ -1,10 +1,14 @@
 import axios from 'axios';
-import { ISearch, ISearchDeezer, ITrack } from '../../interfaces';
+import {
+  type ISearch,
+  type ISearchDeezer,
+  type ITrack,
+} from '../../interfaces';
 
 export class Search implements ISearch {
   constructor() {}
 
-  async search(arg: string, index: number): Promise<ISearchDeezer | Error> {
+  async search(arg: string, index?: number): Promise<ISearchDeezer | Error> {
     try {
       const response = await axios.get(
         `https://api.deezer.com/search?q=${arg}&index=${index}`

@@ -4,43 +4,44 @@ import {
   Model,
   PrimaryKey,
   AutoIncrement,
-  DataType,
-} from 'sequelize-typescript';
+  DataType
+} from 'sequelize-typescript'
 
-import { IFavoriteMusic, IUser } from '../interfaces';
+import { type IFavoriteMusic, IUser } from '../interfaces'
 
 @Table
 class FavoriteMusic extends Model<IFavoriteMusic> implements IFavoriteMusic {
   artist: {
-    id: number;
-    name: string;
-    link: string;
-    picture: string;
-    picture_big: string;
-  };
-  album: { id: number; title: string; cover: string; cover_big: string };
+    id: number
+    name: string
+    link: string
+    picture: string
+    picture_big: string
+  }
+
+  album: { id: number, title: string, cover: string, cover_big: string }
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id: number;
+  	id: number
 
   @Column(DataType.INTEGER)
-  userId: number;
+  	userId: number
 
   @Column(DataType.INTEGER)
-  trackId: number;
+  	trackId: number
 
   @Column(DataType.STRING)
-  title: string;
+  	title: string
 
   @Column(DataType.STRING)
-  link: string;
+  	link: string
 
   @Column(DataType.INTEGER)
-  duration: number;
+  	duration: number
 
   @Column(DataType.STRING)
-  preview: string;
+  	preview: string
 }
 
-export { FavoriteMusic };
+export { FavoriteMusic }

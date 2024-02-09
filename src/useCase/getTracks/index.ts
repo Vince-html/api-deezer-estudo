@@ -1,17 +1,17 @@
-import axios from 'axios';
-import { IGetTrack, ITrack } from '../../interfaces';
+import axios from 'axios'
+import { type IGetTrack, type ITrack } from '../../interfaces'
 
 export class GetTrack implements IGetTrack {
-  constructor() {}
+  constructor () {}
 
-  async get(index: number, limit: number): Promise<ITrack[] | Error> {
+  async get (index: number, limit: number): Promise<ITrack[] | Error> {
     if (isNaN(index) || isNaN(limit)) {
-      throw new Error('Erro ao acessar a API do Deezer.');
+      throw new Error('Erro ao acessar a API do Deezer.')
     }
     try {
       const response = await axios.get(
-        `https://api.deezer.com/chart/0/tracks?index=${index}&limit=${limit}`
-      );
+				`https://api.deezer.com/chart/0/tracks?index=${index}&limit=${limit}`
+      )
 
       const tracks: ITrack[] = response.data.data.map((track: any) => {
         return {
@@ -25,20 +25,20 @@ export class GetTrack implements IGetTrack {
             name: track.artist.name,
             link: track.artist.link,
             picture: track.artist.picture,
-            picture_big: track.artist.picture_big,
+            picture_big: track.artist.picture_big
           },
           album: {
             id: track.album.id,
             title: track.album.title,
             cover: track.album.cover,
-            cover_big: track.album.cover_big,
-          },
-        };
-      });
+            cover_big: track.album.cover_big
+          }
+        }
+      })
 
-      return tracks;
+      return tracks
     } catch (error) {
-      return new Error('Erro ao acessar a API do Deezer.');
+      return new Error('Erro ao acessar a API do Deezer.')
     }
   }
 }

@@ -1,5 +1,5 @@
-import { ISearchDeezer } from './search';
+import { type ISearchDeezer } from './search';
 
 export interface ISearch {
-  search(arg: string, index?: number): Promise<ISearchDeezer | Error>;
+  search: (arg: string, index?: number) => Promise<ISearchDeezer | Error>;
 }

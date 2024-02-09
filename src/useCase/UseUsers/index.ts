@@ -1,44 +1,61 @@
-import { IUsers, IUser } from '../../interfaces';
+import { type IUsers, type IUser } from '../../interfaces';
 import bcrypt from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 
 import { User } from '../../Models/user';
-import { IUserRepository } from '../../interfaces/user-repository';
-
+import { type IUserRepository } from '../../interfaces/user-repository';
+type UserP = Omit<IUser, 'password'>;
 class UseUsers implements IUsers {
-  private userRepository: IUserRepository;
+  private readonly userRepository: IUserRepository;
   constructor(UserRepository: IUserRepository) {
     this.userRepository = UserRepository;
   }
+
   users: IUser[];
 
-  private removePassword = (user: IUser) => {
+  private readonly removePassword = (
+    user: IUser
+  ): {
+    name: string;
+    id?: number | undefined;
+  } => {
     const { password, ...userWithoutPassword } = user;
     return userWithoutPassword;
   };
 
-  async get(userId?: number, userName?: string) {
-    if (userId) {
-      const user = await this.userRepository.getById(userId);
+  async get(
+    userId?: number,
+    userName?: string
+  ): Promise<UserP | UserP[] | Error> {
+    try {
+      if (userId !== undefined && !isNaN(userId)) {
+        const user = await this.userRepository.getById(userId);
 
-      if (!user) {
-        return new Error('Usuário não encontrado');
+        if (user == null) {
+          return new Error('Usuário não encontrado');
+        }
+        return this.removePassword(user);
       }
-      return this.removePassword(user);
-    }
-    if (userName) {
-      const user = await this.userRepository.getByName(userName);
+      if (userName !== undefined && userName !== '') {
+        const user = await this.userRepository.getByName(userName);
 
-      if (!user) {
-        return new Error('Usuário não encontrado');
+        if (user == null) {
+          return new Error('Usuário não encontrado');
+        }
+        return this.removePassword(user);
       }
-      return this.removePassword(user);
-    }
-    const users = await this.userRepository.getAll();
+      const users = await this.userRepository.getAll();
 
-    return users.map((user) => this.removePassword(user));
+      return users.map((user) => this.removePassword(user));
+    } catch (err) {
+      return new Error('Houve um problema na busca do usuário');
+    }
   }
-  async create(userName: string, password: string) {
+
+  async create(
+    userName: string,
+    password: string
+  ): Promise<Error | 'Usuário criado com sucesso'> {
     try {
       const findUser = await this.userRepository.checkExistsUser(userName);
 
@@ -56,11 +73,13 @@ class UseUsers implements IUsers {
       return new Error('Houve um problema na criação do usuário');
     }
   }
-  async createPassword(password: string) {
+
+  async createPassword(password: string): Promise<string> {
     const saltRounds = 10;
     const hashPassword = await bcrypt.hash(password, saltRounds);
     return hashPassword;
   }
+
   async comparePassword(password: string, hash: string) {
     const isPasswordValid = await bcrypt.compare(password, hash);
     if (!isPasswordValid) {
@@ -73,7 +92,7 @@ class UseUsers implements IUsers {
     const users = await User.findAll();
     let token: string | Error;
     const findUser = users.find((user) => user.name === userName);
-    if (!findUser) {
+    if (findUser == null) {
       return new Error('Usuário não encontrado');
     }
     const enteredPassword = password;
@@ -101,15 +120,18 @@ class UseUsers implements IUsers {
       return new Error('Houve um problema na criação do usuário');
     }
   }
-  async createToken(userId: number) {
+
+  async createToken(userId: number): Promise<string | Error> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     require('dotenv').config();
     const tokenUser: string | Error = await new Promise((resolve, reject) => {
       if (!process.env.TEST || process.env.TEST === 'undefined' || !userId) {
-        return reject(new Error('Erro ao gerar token'));
+        reject(new Error('Erro ao gerar token'));
+        return;
       }
 
       sign(userId.toString(), process.env.TEST, (err, token) => {
-        if (err || !token) {
+        if (err != null || !token) {
           reject(new Error('Erro ao gerar token'));
         } else {
           resolve(token);

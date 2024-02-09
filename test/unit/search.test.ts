@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { GetTrack } from '../../src/useCase/getTracks';
 import { mock } from '../../src/mock/track';
 import { Search } from '../../src/useCase/search';
 

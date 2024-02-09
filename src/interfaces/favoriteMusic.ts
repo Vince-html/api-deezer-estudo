@@ -1,8 +1,8 @@
-import { ITrack } from './track';
-import { IUser } from './user';
+import { type ITrack } from './track'
+import { IUser } from './user'
 
 interface IFavoriteMusic extends ITrack {
-  userId: number;
+  userId: number
 }
 
-export { IFavoriteMusic };
+export type { IFavoriteMusic }

@@ -7,7 +7,7 @@ import {
   DataType,
 } from 'sequelize-typescript';
 
-import { IUser } from '../interfaces';
+import { type IUser } from '../interfaces';
 
 @Table
 class User extends Model<IUser> implements IUser {
@@ -20,7 +20,7 @@ class User extends Model<IUser> implements IUser {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id?: number;
+  id: number;
 }
 
 export { User };

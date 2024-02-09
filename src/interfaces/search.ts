@@ -1,8 +1,8 @@
-import { ITrack } from './track';
+import { type ITrack } from './track'
 
 export interface ISearchDeezer {
-  data: ITrack[];
-  total: number;
-  next: string;
-  prev?: string;
+  data: ITrack[]
+  total: number
+  next: string
+  prev?: string
 }

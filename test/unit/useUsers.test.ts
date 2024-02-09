@@ -32,7 +32,7 @@ describe('Create UseUsers', () => {
     const useUsers = new UseUsers(userRepository);
     const user = await useUsers.create('user', 'password');
 
-    expect(user).toEqual('Usuário criado com sucesso');
+    expect(user).toBe('Usuário criado com sucesso');
   });
 
   test('create and findUser', async () => {
@@ -105,7 +105,7 @@ describe('Get UseUsers', () => {
     expect(user).toBeInstanceOf(Error);
     expect(user).toStrictEqual(Error('Usuário não encontrado'));
   });
-  test('get by id and not found', async () => {
+  test('get by name and not found', async () => {
     const spyCreateRepository = jest.spyOn(userRepository, 'getByName');
     const useUsers = new UseUsers(userRepository);
     spyCreateRepository.mockResolvedValue(null);
@@ -119,13 +119,13 @@ describe('Login UseUsers', () => {
   test('login', async () => {
     const findAllSpy = jest.spyOn(bcrypt, 'compare');
 
-    findAllSpy.mockImplementation(() => Promise.resolve(true));
+    findAllSpy.mockImplementation(async () => await Promise.resolve(true));
     const useUsers = new UseUsers(new MockUserRepository());
     const user = await useUsers.login('user', 'password');
 
     expect(typeof user).toBe('string');
   });
-  test('login and not found', async () => {
+  test('login and not found return error', async () => {
     const useUsers = new UseUsers(new MockUserRepository());
     const user = await useUsers.login('name', 'password');
 
@@ -151,7 +151,7 @@ describe('Login UseUsers', () => {
   test('login and password invalid', async () => {
     const findAllSpy = jest.spyOn(bcrypt, 'compare');
 
-    findAllSpy.mockImplementation(() => Promise.resolve(false));
+    findAllSpy.mockImplementation(async () => await Promise.resolve(false));
     const useUsers = new UseUsers(new MockUserRepository());
     const user = await useUsers.login('user', 'password2223');
 

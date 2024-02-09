@@ -7,6 +7,6 @@ export const dbConfig = {
   logging: false,
   define: {
     timestamps: true,
-    underscored: true,
-  },
-};
+    underscored: true
+  }
+}

@@ -1,8 +1,14 @@
 import { UseUsers } from '../../src/useCase/UseUsers';
 
-import dotenv from 'dotenv-safe';
-
 process.env.TEST = 'validSecret';
+
+const handleCallCreateToken = async (useUsers: UseUsers): Promise<unknown> => {
+  try {
+    await useUsers.createToken(1);
+  } catch (err) {
+    return err;
+  }
+};
 const MockUserRepository = jest.fn(() => ({
   create: jest.fn(),
   update: jest.fn(),
@@ -27,27 +33,21 @@ describe('createToken', () => {
     const useUsers = new UseUsers(userRepository);
 
     const result = await useUsers.createToken(1);
-    expect(result).toStrictEqual('tokenGerado');
+    expect(result).toBe('tokenGerado');
   });
 
   it('deve retornar um erro quando ocorre um erro durante a geração do token', async () => {
     delete process.env.TEST;
 
     const useUsers = new UseUsers(userRepository);
-    try {
-      await useUsers.createToken(1);
-    } catch (err) {
-      expect(err).toStrictEqual(Error('Erro ao gerar token'));
-    }
+    const err = await handleCallCreateToken(useUsers);
+    expect(err).toStrictEqual(Error('Erro ao gerar token'));
   });
-  it('deve retornar um erro quando ocorre um erro durante a geração do token', async () => {
+  it('deve retornar um erro quando ocorre um erro durante a geração do token undefined', async () => {
     process.env.TEST = undefined;
 
     const useUsers = new UseUsers(userRepository);
-    try {
-      await useUsers.createToken(1);
-    } catch (err) {
-      expect(err).toStrictEqual(Error('Erro ao gerar token'));
-    }
+    const err = await handleCallCreateToken(useUsers);
+    expect(err).toStrictEqual(Error('Erro ao gerar token'));
   });
 });

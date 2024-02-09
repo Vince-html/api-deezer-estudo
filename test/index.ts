@@ -1,3 +1,3 @@
-const { setup } = require('jest-config');
+const { setup } = require('jest-config')
 
-setup();
+setup()

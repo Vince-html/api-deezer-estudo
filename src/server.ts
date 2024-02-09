@@ -1,48 +1,48 @@
-import express from 'express';
+import express from 'express'
 
-import cors from 'cors';
-const search = require('./routes/search/index.ts');
-const deezer = require('./routes/deezer/index.ts');
+import cors from 'cors'
 
-const authPost = require('./routes/auth/index.ts');
-
-import { JsonObject } from 'swagger-ui-express';
-import bodyParser from 'body-parser';
+import { type JsonObject } from 'swagger-ui-express'
+import bodyParser from 'body-parser'
 // import { swagger } from './swagger/swagger_output.json';
-import { serve, setup } from 'swagger-ui-express';
-import { sequelize } from './connect';
+import { serve, setup } from 'swagger-ui-express'
+import { sequelize } from './connect'
+const search = require('./routes/search/index.ts')
+const deezer = require('./routes/deezer/index.ts')
 
-const deezerDoc = require('./swagger/swagger_output.json');
+const authPost = require('./routes/auth/index.ts')
 
-const app = express();
-require('dotenv').config();
-const jsonObject: JsonObject = deezerDoc as unknown as JsonObject;
-app.use('/api-docs', serve, setup(jsonObject, { explorer: true }));
+const deezerDoc = require('./swagger/swagger_output.json')
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.json());
-app.use(cors());
+const app = express()
+require('dotenv').config()
+const jsonObject: JsonObject = deezerDoc as unknown as JsonObject
+app.use('/api-docs', serve, setup(jsonObject, { explorer: true }))
 
-app.use('/deezer', deezer);
-app.use('/search', search);
-app.use('/auth', authPost);
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(express.json())
+app.use(cors())
 
-function startServer() {
+app.use('/deezer', deezer)
+app.use('/search', search)
+app.use('/auth', authPost)
+
+function startServer () {
   sequelize.sync().then(() => {
-    console.log('All models were synchronized successfully.');
-  });
-  const server = app.listen(3001, () => {});
+    console.log('All models were synchronized successfully.')
+  })
+  const server = app.listen(3001, () => {})
 
   process.on('SIGINT', () => {
-    sequelize.close();
+    sequelize.close()
     server.close(() => {
-      console.log('Servidor proxy encerrado.');
-      process.exit(0);
-    });
-  });
+      console.log('Servidor proxy encerrado.')
+      process.exit(0)
+    })
+  })
 }
 if (require.main === module) {
-  startServer();
+  startServer()
 }
 
-export { app };
+export { app }

@@ -1,3 +1,3 @@
-import { IUser } from './src/interfaces';
+import { type IUser } from './src/interfaces'
 
-export const users: IUser[] = [];
+export const users: IUser[] = []

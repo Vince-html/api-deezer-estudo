@@ -1,5 +1,5 @@
-export type IUser = {
-  name: string;
-  password: string;
-  id?: number;
-};
+export interface IUser {
+  name: string
+  password: string
+  id?: number
+}

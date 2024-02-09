@@ -1,4 +1,5 @@
 import qual from '../../src/useQual';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require('fs');
 
 describe('test qual', () => {
@@ -8,7 +9,7 @@ describe('test qual', () => {
     const result = await qual({ metodo: 'post' });
     expect(result).toBe(false);
   });
-  it('should return true', async () => {
+  it('should return false', async () => {
     jest.spyOn(fs, 'existsSync').mockImplementation(() => true);
     // jest.spyOn(require, 'resolve').mockImplementation(() => 'test');
     const result = await qual({ metodo: 'post' });

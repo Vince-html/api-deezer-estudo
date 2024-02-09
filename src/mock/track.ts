@@ -9,12 +9,12 @@ export const mock = {
     name: 'track.artist.name',
     link: 'track.artist.link',
     picture: 'track.artist.picture',
-    picture_big: 'track.artist.picture_big',
+    picture_big: 'track.artist.picture_big'
   },
   album: {
     id: 'track.album.id',
     title: 'track.album.title',
     cover: 'track.album.cover',
-    cover_big: 'track.album.cover_big',
-  },
-};
+    cover_big: 'track.album.cover_big'
+  }
+}

@@ -1,8 +1,8 @@
 const errorUser = (message: string, statusCode: number) => {
   return {
     error: message,
-    statusCode,
-  };
-};
+    statusCode
+  }
+}
 
-export { errorUser };
+export { errorUser }
